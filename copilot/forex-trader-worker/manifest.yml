@@ -31,15 +31,15 @@ secrets:
 
 storage:
   volumes:
-    - name: data
+    data:
       path: '/app/data'
       read_only: false
-    - name: logs
+    logs:
       path: '/app/logs'
       read_only: false
 
 deployment:
-  rolling:
+  rolling_update:
     cpu_percentage: 50
     memory_percentage: 50
     circuit_breaker:
