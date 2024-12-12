@@ -31,10 +31,10 @@ secrets:
 
 storage:
   volumes:
-    data:
+    - name: data
       path: '/app/data'
       read_only: false
-    logs:
+    - name: logs
       path: '/app/logs'
       read_only: false
 
