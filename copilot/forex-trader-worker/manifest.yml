@@ -45,3 +45,7 @@ deployment:
     circuit_breaker:
       enabled: true
       rollback: true
+
+exec_role_policies:
+  - AWSSSMReadOnlyAccess
+  - SecretsManagerReadWrite
