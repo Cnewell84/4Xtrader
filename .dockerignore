@@ -9,5 +9,8 @@ venv/
 .env/
 .venv/
 *.log
-.git
-.gitignore 
+.git/
+.gitignore
+Lean/.git/
+**/Lean/.git/**
+**/.git/** 

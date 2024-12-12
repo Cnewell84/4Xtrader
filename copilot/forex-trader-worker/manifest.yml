@@ -1,6 +1,6 @@
 # Worker Service for live trading
 name: forex-trader-worker
-type: Worker Service
+type: Backend Service  # Changed from Scheduled Job to Backend Service for batch deployment
 
 image:
   build:
@@ -8,11 +8,12 @@ image:
     context: .
     target: trading_agent
   command: python live_trading.py
+  execution_role: arn:aws:iam::976193254747:role/forex-trader-execution-role
 
 cpu: 1024
 memory: 2048
 platform: linux/x86_64
-count: 1
+count: 1  # Number of tasks to run
 
 variables:
   SYMBOL: USD
@@ -35,4 +36,13 @@ storage:
       read_only: false
     logs:
       path: '/app/logs'
-      read_only: false 
+      read_only: false
+
+# Deployment configuration
+deployment:
+  rolling:
+    cpu_percentage: 50
+    memory_percentage: 50
+    circuit_breaker:
+      enabled: true
+      rollback: true

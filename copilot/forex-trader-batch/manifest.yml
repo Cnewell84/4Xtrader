@@ -2,6 +2,9 @@
 name: forex-trader-batch
 type: Scheduled Job
 
+on:
+  schedule: "0 0 * * ?"  # Run at midnight UTC
+
 image:
   build:
     dockerfile: Dockerfile
@@ -11,9 +14,6 @@ image:
 cpu: 1024
 memory: 2048
 platform: linux/x86_64
-
-# Schedule retraining daily
-schedule: cron(0 0 * * ? *)  # Run at midnight UTC
 
 variables:
   MODEL_PATH: ppo_forex_agent.zip
@@ -37,3 +37,5 @@ storage:
 # Retry configuration
 retries: 3
 timeout: 3h 
+
+execution_role: arn:aws:iam::976193254747:role/forex-trader-execution-role

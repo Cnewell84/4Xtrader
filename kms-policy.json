@@ -1,0 +1,20 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParametersByPath",
+                "secretsmanager:GetSecretValue",
+                "kms:Decrypt"
+            ],
+            "Resource": [
+                "arn:aws:ssm:us-east-2:976193254747:parameter/forex-trader/*",
+                "arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*",
+                "arn:aws:kms:us-east-2:976193254747:key/*"
+            ]
+        }
+    ]
+}
