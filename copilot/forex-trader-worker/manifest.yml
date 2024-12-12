@@ -24,10 +24,14 @@ variables:
   RISK_PERCENTAGE: 0.02
 
 secrets:
-  OANDA_ACCESS_TOKEN: /forex-trader/oanda/access-token
-  OANDA_ACCOUNT_ID: /forex-trader/oanda/account-id
-  EMAIL_PASSWORD: /forex-trader/email/password
-  TWILIO_AUTH_TOKEN: /forex-trader/twilio/auth-token
+  OANDA_ACCESS_TOKEN:
+    secretsmanager: /forex-trader/oanda/access-token
+  OANDA_ACCOUNT_ID:
+    secretsmanager: /forex-trader/oanda/account-id
+  EMAIL_PASSWORD:
+    secretsmanager: /forex-trader/email/password
+  TWILIO_AUTH_TOKEN:
+    secretsmanager: /forex-trader/twilio/auth-token
 
 storage:
   volumes:
