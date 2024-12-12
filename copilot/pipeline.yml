@@ -13,7 +13,7 @@ source:
   properties:
     branch: main
     repository: https://github.com/your-repo/forex-trading
-    connection_name: GitHub-Connection
+    connection_name: 4XTrader
 
 deployments:
   - name: prod
