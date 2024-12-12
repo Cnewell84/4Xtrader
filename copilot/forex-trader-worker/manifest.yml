@@ -51,14 +51,18 @@ deployment:
       rollback: true
 
 exec_role_policies:
-  - AWSSSMReadOnlyAccess
-  - SecretsManagerReadWrite
+  - Statement:
+      Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+        - secretsmanager:DescribeSecret
+        - secretsmanager:ListSecrets
+      Resource:
+        - "arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*"
   - Statement:
       Effect: Allow
       Action:
         - ssm:GetParameters
         - ssm:GetParameter
-        - secretsmanager:GetSecretValue
       Resource:
-        - arn:aws:ssm:us-east-2:976193254747:parameter/forex-trader/*
-        - arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*
+        - "arn:aws:ssm:us-east-2:976193254747:parameter/forex-trader/*"
