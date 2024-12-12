@@ -1,6 +1,6 @@
 # Worker Service for live trading
 name: forex-trader-worker
-type: Backend Service  # Changed from Scheduled Job to Backend Service for batch deployment
+type: Backend Service
 
 image:
   build:
@@ -13,7 +13,7 @@ image:
 cpu: 1024
 memory: 2048
 platform: linux/x86_64
-count: 1  # Number of tasks to run
+count: 1
 
 variables:
   SYMBOL: USD
@@ -38,7 +38,6 @@ storage:
       path: '/app/logs'
       read_only: false
 
-# Deployment configuration
 deployment:
   rolling:
     cpu_percentage: 50

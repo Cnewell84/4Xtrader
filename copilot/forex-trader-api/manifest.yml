@@ -45,7 +45,7 @@ deployment:
       rollback: true
 
 health_check:
-  command: curl -f http://localhost:8080/health || exit 1  # Adjust port/path to match your app
+  command: curl -f http://localhost:8080/health || exit 1
   interval: 30s
   timeout: 5s
   retries: 3
