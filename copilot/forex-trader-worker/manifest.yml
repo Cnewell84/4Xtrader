@@ -66,3 +66,15 @@ exec_role_policies:
         - ssm:GetParameter
       Resource:
         - "arn:aws:ssm:us-east-2:976193254747:parameter/forex-trader/*"
+
+# Add task execution role policies for Secrets Manager access
+task_exec_role:
+  managed_policies:
+    - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policies:
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+        - secretsmanager:DescribeSecret
+      Resource:
+        - "arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*"

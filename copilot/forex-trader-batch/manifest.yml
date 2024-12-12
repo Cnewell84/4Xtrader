@@ -39,3 +39,14 @@ retries: 3
 timeout: 3h 
 
 execution_role: arn:aws:iam::976193254747:role/forex-trader-execution-role
+
+task_exec_role:
+  managed_policies:
+    - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policies:
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+        - secretsmanager:DescribeSecret
+      Resource:
+        - "arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*"
