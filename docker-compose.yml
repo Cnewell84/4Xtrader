@@ -12,7 +12,8 @@ services:
       FLASK_ENV: production
       OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
       OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      # Add other environment variables as needed
+      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./logs:/app/logs
       - ./config.json:/Lean/Launcher/config.json          # Mount config.json
@@ -33,7 +34,8 @@ services:
       RISK_PERCENTAGE: 0.02
       OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
       OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      # Add other environment variables as needed
+      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -49,7 +51,8 @@ services:
       LOG_DIR: logs
       OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
       OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      # Add other environment variables as needed
+      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -68,7 +71,8 @@ services:
       MODEL_PATH: ppo_forex_agent.zip
       HISTORICAL_DATA_PATH: data/historical_data.csv
       OUTPUT_CSV: backtest_results.csv
-      # Add other environment variables as needed
+      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -81,7 +85,8 @@ services:
     environment:
       OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
       OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      # Add other environment variables as needed
+      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./logs:/app/logs
       - ./config.json:/Lean/Launcher/config.json          # Mount config.json
