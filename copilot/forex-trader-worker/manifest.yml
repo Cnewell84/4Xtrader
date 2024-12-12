@@ -58,5 +58,7 @@ exec_role_policies:
       Action:
         - ssm:GetParameters
         - ssm:GetParameter
+        - secretsmanager:GetSecretValue
       Resource:
         - arn:aws:ssm:us-east-2:976193254747:parameter/forex-trader/*
+        - arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*
