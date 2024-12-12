@@ -15,7 +15,7 @@ services:
       # Add other environment variables as needed
     volumes:
       - ./logs:/app/logs
-      - ./config.json:/lean/config.json          # Mount config.json
+      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     depends_on:
       - trading_agent
 
@@ -25,7 +25,7 @@ services:
     command: python live_trading.py
     environment:
       - MODEL_PATH=ppo_forex_agent.zip
-      - SYMBOL=EURUSD
+      - SYMBOL=USD
       - LOT_SIZE=0.01
       - STOP_LOSS=50
       - TAKE_PROFIT=50
@@ -37,7 +37,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/lean/config.json          # Mount config.json
+      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
 
   retrain_agent:
     build: .
@@ -53,7 +53,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/lean/config.json          # Mount config.json
+      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     deploy:
       mode: replicated
       replicas: 1
@@ -72,7 +72,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/lean/config.json          # Mount config.json
+      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
 
   test_environment:
     build: .
@@ -84,6 +84,6 @@ services:
       # Add other environment variables as needed
     volumes:
       - ./logs:/app/logs
-      - ./config.json:/lean/config.json          # Mount config.json
+      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     depends_on:
       - trading_agent

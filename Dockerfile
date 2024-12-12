@@ -1,20 +1,21 @@
-# Use an official Python runtime as a parent image
-FROM python:3.8-slim
-
-# Set the working directory in the container
+# Base stage with common dependencies
+FROM python:3.9-slim as base
 WORKDIR /app
-
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# Install any needed packages specified in requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the gym package
-RUN pip install gym
+# API stage
+FROM base as api
+COPY . .
+EXPOSE 5000
+CMD ["python", "app.py"]
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Run app.py when the container launches
+# Trading agent stage
+FROM base as trading_agent
+COPY . .
 CMD ["python", "live_trading.py"]
+
+# Batch jobs stage
+FROM base as batch_jobs
+COPY . .
+CMD ["python", "auto_retrain.py"]

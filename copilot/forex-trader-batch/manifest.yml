@@ -1,0 +1,39 @@
+# Batch jobs for retraining and backtesting
+name: forex-trader-batch
+type: Scheduled Job
+
+image:
+  build:
+    dockerfile: Dockerfile
+    context: .
+    target: batch_jobs
+
+cpu: 1024
+memory: 2048
+platform: linux/x86_64
+
+# Schedule retraining daily
+schedule: cron(0 0 * * ? *)  # Run at midnight UTC
+
+variables:
+  MODEL_PATH: ppo_forex_agent.zip
+  TRAINING_DATA_FILE: data/processed_forex_data.csv
+  HISTORICAL_DATA_PATH: data/historical_data.csv
+  OUTPUT_CSV: backtest_results.csv
+
+secrets:
+  OANDA_ACCESS_TOKEN: /forex-trader/oanda/access-token
+  OANDA_ACCOUNT_ID: /forex-trader/oanda/account-id
+
+storage:
+  volumes:
+    data:
+      path: '/app/data'
+      read_only: false
+    logs:
+      path: '/app/logs'
+      read_only: false
+
+# Retry configuration
+retries: 3
+timeout: 3h 

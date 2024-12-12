@@ -1,0 +1,30 @@
+# This YAML file defines the relationship and deployment ordering of your environments.
+
+# The name of the pipeline
+name: forex-trading-pipeline
+
+# The version of the schema used in this template
+version: 1
+
+# This section defines the source artifacts.
+source:
+  # Your GitHub repository
+  provider: GitHub
+  properties:
+    branch: main
+    repository: https://github.com/your-repo/forex-trading
+    connection_name: GitHub-Connection
+
+# The deployment stages.
+stages:
+    - # The name of the environment.
+      name: prod
+      # Optional: flag for manual approval before deployment.
+      requires_approval: true
+      # The order in which services should be deployed.
+      deployments:
+        - name: forex-trader-api
+        - name: forex-trader-worker
+          depends_on: [forex-trader-api]
+        - name: forex-trader-batch
+          depends_on: [forex-trader-worker] 

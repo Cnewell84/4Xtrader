@@ -1,0 +1,38 @@
+# Worker Service for live trading
+name: forex-trader-worker
+type: Worker Service
+
+image:
+  build:
+    dockerfile: Dockerfile
+    context: .
+    target: trading_agent
+  command: python live_trading.py
+
+cpu: 1024
+memory: 2048
+platform: linux/x86_64
+count: 1
+
+variables:
+  SYMBOL: USD
+  LOT_SIZE: 0.01
+  STOP_LOSS: 50
+  TAKE_PROFIT: 50
+  CHECK_INTERVAL: 60
+  RISK_PERCENTAGE: 0.02
+
+secrets:
+  OANDA_ACCESS_TOKEN: /forex-trader/oanda/access-token
+  OANDA_ACCOUNT_ID: /forex-trader/oanda/account-id
+  EMAIL_PASSWORD: /forex-trader/email/password
+  TWILIO_AUTH_TOKEN: /forex-trader/twilio/auth-token
+
+storage:
+  volumes:
+    data:
+      path: '/app/data'
+      read_only: false
+    logs:
+      path: '/app/logs'
+      read_only: false 

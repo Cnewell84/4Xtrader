@@ -5,3 +5,5 @@ stable-baselines3
 oandapyV20
 azure-storage-blob
 twilio
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1+cpu
