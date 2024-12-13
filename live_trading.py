@@ -3,29 +3,18 @@ import pandas as pd
 import numpy as np
 from stable_baselines3 import PPO
 from forex_env import ForexEnv  # Ensure ForexEnv is adapted for live trading
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from twilio.rest import Client
+import telegram
+import os
 
 # Risk Management Configuration
 MAX_DRAWDOWN_PERCENTAGE = 0.10  # 10% drawdown
 MAX_VOLATILITY_PERCENTAGE = 0.05  # 5% volatility
 
-# Email Alert Configuration
-EMAIL_ENABLED = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_ADDRESS = 'your_email@gmail.com'
-EMAIL_PASSWORD = 'your_email_password'
-EMAIL_RECIPIENT = 'recipient_email@gmail.com'
 
-# SMS Alert Configuration
-SMS_ENABLED = True
-TWILIO_ACCOUNT_SID = 'your_twilio_account_sid'
-TWILIO_AUTH_TOKEN = 'your_twilio_auth_token'
-TWILIO_PHONE_NUMBER = '+1234567890'  # Your Twilio phone number
-SMS_RECIPIENT = '+0987654321'  # Your phone number
+
+
+TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 
 # Configuration
 MODEL_PATH = "ppo_forex_agent.zip"       # Path to your trained RL model
@@ -66,56 +55,19 @@ def calculate_position_size(account_balance, profit_pool, scaling_factor=0.01, r
 
     return position_size
 
-def send_email(subject, body):
+def send_telegram_message(message):
     """
-    Send an email alert.
+    Send a Telegram alert.
     
     Parameters:
-    - subject (str): Subject of the email.
-    - body (str): Body content of the email.
+    - message (str): Content of the message.
     """
-    if not EMAIL_ENABLED:
-        return
-    
     try:
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_ADDRESS
-        msg['To'] = EMAIL_RECIPIENT
-        msg['Subject'] = subject
-        
-        msg.attach(MIMEText(body, 'plain'))
-        
-        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
-        server.starttls()
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        text = msg.as_string()
-        server.sendmail(EMAIL_ADDRESS, EMAIL_RECIPIENT, text)
-        server.quit()
-        
-        print(f"Email sent: {subject}")
+        bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+        print("Telegram message sent.")
     except Exception as e:
-        print(f"Failed to send email: {e}")
-
-def send_sms(message):
-    """
-    Send an SMS alert.
-    
-    Parameters:
-    - message (str): Content of the SMS.
-    """
-    if not SMS_ENABLED:
-        return
-    
-    try:
-        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        client.messages.create(
-            body=message,
-            from_=TWILIO_PHONE_NUMBER,
-            to=SMS_RECIPIENT
-        )
-        print("SMS sent.")
-    except Exception as e:
-        print(f"Failed to send SMS: {e}")
+        print(f"Failed to send Telegram message: {e}")
 
 def main():
     # Load the trained PPO model
@@ -178,8 +130,7 @@ def main():
             if drawdown > MAX_DRAWDOWN_PERCENTAGE:
                 message = f"Excessive Drawdown Alert! Drawdown: {drawdown:.2%}"
                 print(message)
-                send_email("Excessive Drawdown Alert", message)
-                send_sms(message)
+                send_telegram_message(message)
                 print("Trading halted due to excessive drawdown.")
                 break  # Halt trading
 
@@ -187,8 +138,7 @@ def main():
             if volatility > MAX_VOLATILITY_PERCENTAGE:
                 message = f"High Volatility Alert! Volatility: {volatility:.2%}"
                 print(message)
-                send_email("High Volatility Alert", message)
-                send_sms(message)
+                send_telegram_message(message)
                 print("Trading halted due to high volatility.")
                 break  # Halt trading
 
