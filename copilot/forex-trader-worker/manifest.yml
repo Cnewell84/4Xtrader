@@ -55,8 +55,6 @@ exec_role_policies:
       Effect: Allow
       Action:
         - secretsmanager:GetSecretValue
-        - secretsmanager:DescribeSecret
-        - secretsmanager:ListSecrets
       Resource:
         - "arn:aws:secretsmanager:us-east-2:976193254747:secret:/forex-trader/*"
   - Statement:
