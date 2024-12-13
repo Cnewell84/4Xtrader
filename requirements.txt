@@ -1,9 +1,24 @@
-Flask
-pandas
-numpy
-stable-baselines3
-oandapyV20
-azure-storage-blob
-twilio
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.5.1+cpu
+# API and HTTP
+requests>=2.31.0
+oandapyV20>=0.7.2
+
+# Data Processing
+numpy>=1.24.3
+pandas>=2.0.2
+
+# Machine Learning
+tensorflow>=2.12.0
+stable-baselines3>=2.0.0
+gym>=0.26.2
+
+# AWS
+boto3>=1.26.137
+python-dotenv>=1.0.0
+
+# Monitoring and Notifications
+python-telegram-bot>=20.3
+
+# Development Tools
+pytest>=7.3.1
+black>=23.3.0
+flake8>=6.0.0

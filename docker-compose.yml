@@ -16,7 +16,6 @@ services:
       TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./logs:/app/logs
-      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     depends_on:
       - trading_agent
 
@@ -39,7 +38,6 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
 
   retrain_agent:
     build: .
@@ -56,7 +54,6 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     deploy:
       mode: replicated
       replicas: 1
@@ -76,7 +73,8 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
+    depends_on:
+      - trading_agent
 
   test_environment:
     build: .
@@ -89,6 +87,5 @@ services:
       TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
     volumes:
       - ./logs:/app/logs
-      - ./config.json:/Lean/Launcher/config.json          # Mount config.json
     depends_on:
       - trading_agent
