@@ -11,7 +11,9 @@ def get_bot_token():
         response = client.get_secret_value(
             SecretId='/forex-trader/telegram/bot-token'
         )
-        return response['SecretString']
+        token = response['SecretString']
+        print(f"Retrieved bot token: {token}")
+        return token
     except Exception as e:
         print(f"❌ Error getting bot token from Secrets Manager: {str(e)}")
         return None
@@ -84,7 +86,7 @@ def get_chat_id():
             return
             
         if not data['result']:
-            print("\n❌ No messages found. Please:")
+            print("\n��� No messages found. Please:")
             print("1. Open Telegram")
             print("2. Find your bot")
             print("3. Send /start to your bot")
