@@ -7,6 +7,22 @@ import time
 
 logger = logging.getLogger(__name__)
 
+class TelegramBot:
+    def __init__(self, token, chat_id):
+        self.token = token
+        self.chat_id = chat_id
+        self.base_url = f"https://api.telegram.org/bot{self.token}"
+
+    def send_message(self, message):
+        url = f"{self.base_url}/sendMessage"
+        data = {
+            "chat_id": self.chat_id,
+            "text": message,
+            "parse_mode": "HTML"
+        }
+        response = requests.post(url, data=data)
+        return response.json()
+
 class TelegramNotifier:
     def __init__(self):
         self.bot_token = read_secret('telegram_bot_token')

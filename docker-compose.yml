@@ -1,18 +1,12 @@
 version: '3.8'
 
-secrets:
-  oanda_token:
-    external: true
-  oanda_account:
-    external: true
-
 services:
   forex-trader:
     image: cnewell826/forex-trader-worker:v3
     command: ["python", "app.py"]
     secrets:
-      - oanda_token
-      - oanda_account
+      - oanda_access_token
+      - oanda_account_id
       - telegram_bot_token
       - telegram_chat_id
     ports:
@@ -20,3 +14,12 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+secrets:
+  oanda_access_token:
+    file: ./secrets/oanda_access_token.txt
+  oanda_account_id:
+    file: ./secrets/oanda_account_id.txt
+  telegram_bot_token:
+    external: true
+  telegram_chat_id:
+    file: ./secrets/telegram_chat_id.txt

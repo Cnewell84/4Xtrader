@@ -1,5 +1,5 @@
 from trading_strategy import should_enter_trade, should_exit_trade
-from utils.telegram_notifications import TelegramNotifier
+from utils.telegram_notifications import TelegramNotifier, TelegramBot
 from utils.secrets import read_secret
 from oanda_client import OandaAPI
 import logging
@@ -102,15 +102,18 @@ class TradeExecutor:
                 access_token = f.read().strip()
             with open('/run/secrets/oanda_account', 'r') as f:
                 account_id = f.read().strip()
+            # Add Telegram token secret
+            with open('/run/secrets/telegram_bot_token', 'r') as f:
+                telegram_token = f.read().strip()
         except FileNotFoundError as e:
             logging.error(f"Failed to read Docker secrets: {e}")
             raise
 
-        self.api = API(access_token=access_token)
+        self.api = OandaAPI(access_token=access_token, account_id=account_id)
         self.account_id = account_id
         
-        # Telegram config can stay in config file since it's not sensitive
+        # Use telegram_token from secrets instead of config
         self.telegram_bot = None
         if config.get('telegram'):
-            self.telegram_bot = TelegramBot(config['telegram']['token'], 
+            self.telegram_bot = TelegramBot(telegram_token, 
                                           config['telegram']['chat_id'])
