@@ -2,14 +2,18 @@ import os
 import requests
 import logging
 from typing import Optional
+from utils.secrets import read_secret
+import time
 
 logger = logging.getLogger(__name__)
 
 class TelegramNotifier:
     def __init__(self):
-        self.bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-        self.chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+        self.bot_token = read_secret('telegram_bot_token')
+        self.chat_id = read_secret('telegram_chat_id')
         self.base_url = f"https://api.telegram.org/bot{self.bot_token}"
+        self.last_sent = 0
+        self.min_interval = 1  # Minimum 1 second between messages
 
         if not self.bot_token or not self.chat_id:
             raise ValueError("Telegram credentials not properly configured")
@@ -25,6 +29,11 @@ class TelegramNotifier:
         Returns:
             bool: True if message was sent successfully
         """
+        # Ensure we don't exceed rate limits
+        current_time = time.time()
+        if current_time - self.last_sent < self.min_interval:
+            time.sleep(self.min_interval)
+        
         try:
             url = f"{self.base_url}/sendMessage"
             data = {
@@ -34,9 +43,12 @@ class TelegramNotifier:
             }
             
             response = requests.post(url, data=data)
-            response.raise_for_status()
+            if response.status_code == 429:  # Too Many Requests
+                retry_after = int(response.headers.get('Retry-After', 30))
+                time.sleep(retry_after)
+                return self.send_message(message)  # Retry after waiting
             
-            logger.info(f"Telegram notification sent successfully")
+            self.last_sent = time.time()
             return True
             
         except Exception as e:
@@ -99,5 +111,20 @@ class TelegramNotifier:
         message = (
             f"⚠️ <b>Error Alert</b>\n\n"
             f"❌ {error_message}"
+        )
+        return self.send_message(message)
+
+    def send_profit_notification(self, symbol: str, profit: float):
+        """
+        Send a profit notification.
+        
+        Args:
+            symbol: Trading pair (e.g., 'EUR_USD')
+            profit: Profit amount
+        """
+        message = (
+            f"💰 <b>Profit Alert</b>\n\n"
+            f"📈 {symbol}\n"
+            f"💵 Profit: {profit:.2f}"
         )
         return self.send_message(message) 

@@ -4,6 +4,7 @@ import pandas as pd
 from oandapyV20 import API
 import oandapyV20.endpoints.instruments as instruments
 from azure.storage.blob import BlobServiceClient
+from utils.secrets import read_secret
 
 # Define the output CSV path
 OUTPUT_CSV = "data/processed_forex_data.csv"  # Ensure this variable is defined
@@ -15,10 +16,7 @@ def fetch_data():
     Returns:
     - list: List of candle data.
     """
-    access_token = os.getenv("OANDA_ACCESS_TOKEN")
-    if not access_token:
-        raise ValueError("OANDA_ACCESS_TOKEN environment variable not set.")
-    
+    access_token = read_secret('oanda_access_token')
     client = API(access_token=access_token)
     params = {
         "granularity": "M1",

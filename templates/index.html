@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forex Trading Dashboard</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://startbootstrap.com/theme/sb-admin-2/css/sb-admin-2.min.css" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Forex Trading Dashboard</h1>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Market Data</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="priceChart"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trade Form -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Active Trades</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="tradesList"></div>
+                                    <h3>Place New Trade</h3>
+                                    <form id="tradeForm">
+                                        <div class="form-group">
+                                            <select id="instrument" class="form-control">
+                                                <option value="EUR_USD">EUR/USD</option>
+                                                <option value="GBP_USD">GBP/USD</option>
+                                                <option value="USD_JPY">USD/JPY</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="number" id="units" class="form-control" placeholder="Units">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Place Trade</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="https://startbootstrap.com/theme/sb-admin-2/js/sb-admin-2.min.js"></script>
+
+    <script>
+        const socket = io();
+        let priceData = {
+            EUR_USD: { time: [], bid: [], ask: [] },
+            GBP_USD: { time: [], bid: [], ask: [] },
+            USD_JPY: { time: [], bid: [], ask: [] }
+        };
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('market_data', (data) => {
+            console.log('Received market data:', data);
+            const pair = data.instrument;
+            if (!priceData[pair]) {
+                priceData[pair] = { time: [], bid: [], ask: [] };
+            }
+            priceData[pair].time.push(new Date(data.time));
+            priceData[pair].bid.push(data.bid);
+            priceData[pair].ask.push(data.ask);
+
+            // Keep only last 100 points
+            if (priceData[pair].time.length > 100) {
+                priceData[pair].time.shift();
+                priceData[pair].bid.shift();
+                priceData[pair].ask.shift();
+            }
+
+            updateChart();
+        });
+
+        function updateChart() {
+            const currentPair = document.getElementById('instrument').value;
+            const trace1 = {
+                x: priceData[currentPair].time,
+                y: priceData[currentPair].bid,
+                name: 'Bid',
+                type: 'scatter'
+            };
+            const trace2 = {
+                x: priceData[currentPair].time,
+                y: priceData[currentPair].ask,
+                name: 'Ask',
+                type: 'scatter'
+            };
+            Plotly.newPlot('priceChart', [trace1, trace2]);
+        }
+
+        document.getElementById('tradeForm').onsubmit = (e) => {
+            e.preventDefault();
+            const trade = {
+                instrument: document.getElementById('instrument').value,
+                units: document.getElementById('units').value,
+                type: 'MARKET'
+            };
+            socket.emit('place_trade', trade);
+        };
+    </script>
+</body>
+
+</html>

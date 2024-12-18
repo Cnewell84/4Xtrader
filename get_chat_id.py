@@ -1,21 +1,16 @@
 import boto3
 import requests
 import json
+from utils.secrets import read_secret
 
 def get_bot_token():
-    """Get bot token from AWS Secrets Manager"""
+    """Get bot token from Docker secrets"""
     try:
-        session = boto3.session.Session()
-        client = session.client('secretsmanager', region_name='us-east-2')
-        
-        response = client.get_secret_value(
-            SecretId='/forex-trader/telegram/bot-token'
-        )
-        token = response['SecretString']
+        token = read_secret('telegram_bot_token')
         print(f"Retrieved bot token: {token}")
         return token
     except Exception as e:
-        print(f"❌ Error getting bot token from Secrets Manager: {str(e)}")
+        print(f"❌ Error getting bot token: {str(e)}")
         return None
 
 def test_bot_token(bot_token):
@@ -86,7 +81,7 @@ def get_chat_id():
             return
             
         if not data['result']:
-            print("\n��� No messages found. Please:")
+            print("\n No messages found. Please:")
             print("1. Open Telegram")
             print("2. Find your bot")
             print("3. Send /start to your bot")

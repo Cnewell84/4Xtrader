@@ -1,91 +1,22 @@
 version: '3.8'
 
+secrets:
+  oanda_token:
+    external: true
+  oanda_account:
+    external: true
+
 services:
-  web:
-    build: .
-    container_name: forex_web
+  forex-trader:
+    image: cnewell826/forex-trader-worker:v3
+    command: ["python", "app.py"]
+    secrets:
+      - oanda_token
+      - oanda_account
+      - telegram_bot_token
+      - telegram_chat_id
     ports:
-      - "5000:5000"       # Flask app
-      - "8000:8000"       # Other potential services
-      - "8080:8080"       # Grafana or other monitoring tools
-    environment:
-      FLASK_ENV: production
-      OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
-      OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
-    volumes:
-      - ./logs:/app/logs
-    depends_on:
-      - trading_agent
-
-  trading_agent:
-    build: .
-    container_name: forex_trading_agent
-    command: python live_trading.py
-    environment:
-      MODEL_PATH: ppo_forex_agent.zip
-      SYMBOL: USD
-      LOT_SIZE: 0.01
-      STOP_LOSS: 50
-      TAKE_PROFIT: 50
-      CHECK_INTERVAL: 60
-      RISK_PERCENTAGE: 0.02
-      OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
-      OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
+      - "5001:5000"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-
-  retrain_agent:
-    build: .
-    container_name: forex_retrain_agent
-    command: python retrain_agent.py
-    environment:
-      MODEL_PATH: ppo_forex_agent.zip
-      TRAINING_DATA_FILE: data/processed_forex_data.csv
-      LOG_DIR: logs
-      OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
-      OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-
-  backtest:
-    build: .
-    container_name: forex_backtest
-    command: python backtest_agent.py
-    environment:
-      MODEL_PATH: ppo_forex_agent.zip
-      HISTORICAL_DATA_PATH: data/historical_data.csv
-      OUTPUT_CSV: backtest_results.csv
-      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-    depends_on:
-      - trading_agent
-
-  test_environment:
-    build: .
-    container_name: forex_test_environment
-    command: python test_environment.py
-    environment:
-      OANDA_ACCESS_TOKEN: ${AWS_SECRET_OANDA_ACCESS_TOKEN}
-      OANDA_ACCOUNT_ID: ${AWS_SECRET_OANDA_ACCOUNT_ID}
-      TELEGRAM_BOT_TOKEN: ${AWS_SECRET_TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${AWS_SECRET_TELEGRAM_CHAT_ID}
-    volumes:
-      - ./logs:/app/logs
-    depends_on:
-      - trading_agent

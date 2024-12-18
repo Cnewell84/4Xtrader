@@ -5,6 +5,7 @@ from stable_baselines3 import PPO
 from forex_env import ForexEnv  # Ensure ForexEnv is adapted for live trading
 import telegram
 import os
+from utils.secrets import read_secret
 
 # Risk Management Configuration
 MAX_DRAWDOWN_PERCENTAGE = 0.10  # 10% drawdown
@@ -13,8 +14,9 @@ MAX_VOLATILITY_PERCENTAGE = 0.05  # 5% volatility
 
 
 
-TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
+TELEGRAM_BOT_TOKEN = read_secret('telegram_bot_token')
+TELEGRAM_CHAT_ID = read_secret('telegram_chat_id')
+OANDA_ACCESS_TOKEN = read_secret('oanda_access_token')
 
 # Configuration
 MODEL_PATH = "ppo_forex_agent.zip"       # Path to your trained RL model

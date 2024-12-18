@@ -14,3 +14,6 @@ venv/
 Lean/.git/
 **/Lean/.git/**
 **/.git/** 
+README.md
+data/
+logs/
