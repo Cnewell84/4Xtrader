@@ -96,23 +96,33 @@ def adjust_risk_parameters(performance_metrics):
 
 class TradeExecutor:
     def __init__(self, config):
-        # Read secrets from Docker secrets mount point
         try:
+            with open('/run/secrets/oanda_account_id', 'r') as f:
+                account_id = f.read().strip()
+                # OANDA account IDs are typically numeric
+                if not account_id.isdigit():
+                    raise ValueError(f"Invalid OANDA account ID format: {account_id}")
+                
             with open('/run/secrets/oanda_token', 'r') as f:
                 access_token = f.read().strip()
-            with open('/run/secrets/oanda_account', 'r') as f:
-                account_id = f.read().strip()
-            # Add Telegram token secret
+                
             with open('/run/secrets/telegram_bot_token', 'r') as f:
                 telegram_token = f.read().strip()
+                
+            # Log the account ID for debugging (mask most digits)
+            masked_id = '*' * (len(account_id)-4) + account_id[-4:]
+            logging.info(f"Initializing with OANDA account ID: {masked_id}")
+            
         except FileNotFoundError as e:
             logging.error(f"Failed to read Docker secrets: {e}")
+            raise
+        except ValueError as e:
+            logging.error(f"Configuration error: {e}")
             raise
 
         self.api = OandaAPI(access_token=access_token, account_id=account_id)
         self.account_id = account_id
         
-        # Use telegram_token from secrets instead of config
         self.telegram_bot = None
         if config.get('telegram'):
             self.telegram_bot = TelegramBot(telegram_token, 

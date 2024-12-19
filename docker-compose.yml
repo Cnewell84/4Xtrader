@@ -16,10 +16,10 @@ services:
       - ./logs:/app/logs
 secrets:
   oanda_access_token:
-    file: ./secrets/oanda_access_token.txt
+    external: true
   oanda_account_id:
-    file: ./secrets/oanda_account_id.txt
+    external: true
   telegram_bot_token:
     external: true
   telegram_chat_id:
-    file: ./secrets/telegram_chat_id.txt
+    external: true
